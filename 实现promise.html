@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function Promise2(callback) {
+            this.status = 'pending';
+            this.resolveArr = [];
+            this.rejectArr = [];
+            
+        let resolve = value => {
+            this.status = 'fulfilled';
+            this.value = value;
+            this.resolveArr.forEach(fn => value = fn(value));
+            this.resolveArr = []
+        }
+            
+        let reject = value => {
+            this.status = 'rejected';
+            this.value = value;
+            this.resolveArr.forEach(fn => value = fn(value));
+            this.resolveArr = [];
+        }
+
+    
+            try {
+            callback(resolve, reject);
+        } catch (err) {
+            reject(err);
+        }
+
+        }
+
+        Promise2.prototype.then = function(success,fail) {
+            if(this.status === 'pending') {
+                typeof success === 'function' && this.resolveArr.push(success);
+                typeof fail === 'function' && this.resolveArr.push(fail);
+            } else if(this.status === 'fulfilled') {
+                typeof success === 'function' && success(this.value)
+            } else {
+                typeof fail === 'function' && fail(this.value)
+            }
+            return this;
+        }
+
+
+        let p = new Promise2((resolve,reject) => {
+            resolve('success')
+        })
+
+
+        p.then(res => console.log(111,res),err => console.log(222,err))
+
+        .then(res => console.log(333,res),err => console.log(444,err))
+
+        .then(res => console.log(555,res))
+
+    
+
+       
+       
+    
+    </script>
+</body>
+</html>
