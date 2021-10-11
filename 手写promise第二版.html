@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function myPromise(callback) {
+            this.status = 'pending';
+            this.value = undefined;
+            this.err = undefined;
+            this.fulfilledCallback = [];
+            this.rejectCallback = [];
+
+            let resolve = value => {
+                if(this.status === 'pending') {
+                    this.status = 'fulfilled';
+                    this.value = value;
+                    this.fulfilledCallback.forEach(fn => fn());
+                }
+            };
+
+            let reject = err => {
+                if(this.status === 'pending') {
+                    this.status = 'rejected';
+                    this.err = err;
+                    this.rejectCallback.forEach(fn => fn());
+                }
+            };
+            try {
+                callback(resolve,reject);
+            } catch(e) {
+                reject(e);
+            }
+    }
+
+    myPromise.prototype.then = function(onfulfilled,onrejected) {
+            if(this.status === 'fulfilled') {
+                onfulfilled(this.value);
+            }
+
+            if(this.status === 'rejected') {
+                onrejected(this.res);
+            }
+
+            if(this.status === 'pending') {
+                this.fulfilledCallback.push(() => {
+                    onfulfilled(this.value);
+                });
+
+                this.rejectCallback.push(() => {
+                    onrejected(this.err);
+                });
+            }
+    }
+
+    // let p = new myPromise((resolve,reject) => {
+    //         setTimeout(() =>{
+    //             // resolve(111);
+    //            reject(222)
+    //         },1000)
+    // }).then(res => console.log(res,'success'),
+    //         err => console.log(err)
+    // )
+
+
+
+
+
+
+    </script>
+
+
+
+
+    <script>
+        // function myPromise(callback) {
+        //     this.status = 'pending';
+        //     this.value = undefined;
+        //     this.err = undefined;
+        //     this.fulfilledCallback = [];
+        //     this.rejectCallback = [];
+
+        //     let resolve = value => {
+        //        if(this.status === 'pending') {
+        //            this.status = 'fulfilled';
+        //            this.value = value;
+        //            this.fulfilledCallback.forEach(fn => fn());
+        //        }
+        //     };
+
+        //     let reject = err => {
+        //         if(this.status = 'pending') {
+        //             this.status = 'rejected';
+        //             this.err = err;
+        //             this.rejectCallback.forEach(fn => fn());
+        //         }
+        //     };
+
+        //     try {
+        //         callback(resolve,reject);
+        //     } catch(e) {
+        //         reject(e);
+        //     }
+        // }
+
+        // myPromise.prototype.then = function(onfulfilled,onrejected) {
+        //     if(this.status === 'fulfilled') {
+        //         onfulfilled(this.value);
+        //     }
+
+        //     if(this.status === 'rejected') {
+        //         onrejected(this.err);
+        //     }
+
+        //     if(this.status === 'pending') {
+        //         this.fulfilledCallback.push(() => {
+        //             onfulfilled(this.value);
+        //         })
+
+        //         this.rejectCallback.push(() => {
+        //             onrejected(this.err);
+        //         })
+        //     }
+        // }
+
+        let p = new myPromise((resolve,reject) => {
+            setTimeout(() =>{
+                // resolve(111);
+                reject(222)
+            },1000)
+    }).then(res => console.log(res,'success'),
+            err => console.log(err)
+            
+    )
+
+    
+
+    </script>
+</body>
+</html>
